@@ -151,14 +151,18 @@ BEGIN
 END
 GO
 
--- DU LIEU MAU (tuy chon - de test nhanh)
+-- DU LIEU MAU 
+INSERT INTO KHACH_HANG (HoTen, CCCD, SDT, Email, DiaChi)
+VALUES 
+(N'Tống Minh Quân', '001099123456', '0901234567', 'tongminhquan@hotel.vn', N'Đồng Nai');
+
 INSERT INTO NHAN_VIEN (HoTen, ChucVu, SDT, Email, Username, PasswordHash)
 VALUES
-(N'Nguyễn Văn Quản', N'Quản lý', '0900000001', 'quanly@hotel.vn', 'quanly', 'scrypt$placeholder'),
-(N'Trần Thị Lễ',      N'Lễ tân',  '0900000002', 'letan@hotel.vn',  'letan',  'scrypt$placeholder'),
-(N'Lê Văn Kế',        N'Kế toán', '0900000003', 'ketoan@hotel.vn', 'ketoan', 'scrypt$placeholder'),
-(N'Phạm Thị Buồng',   N'Buồng phòng', '0900000004', 'buong@hotel.vn', 'buongphong', 'scrypt$placeholder'),
-(N'Đỗ Văn IT',        N'IT', '0900000005', 'it@hotel.vn', 'it', 'scrypt$placeholder');
+(N'Nguyễn Văn Quản', N'Quản lý', '0900000001', 'quanly@hotel.vn', 'quanly', 'Quanly123'),
+(N'Trần Thị Lễ',      N'Lễ tân',  '0900000002', 'letan@hotel.vn',  'letan',  'Letan123'),
+(N'Lê Văn Kế',        N'Kế toán', '0900000003', 'ketoan@hotel.vn', 'ketoan', 'Kettoan123'),
+(N'Phạm Thị Buồng',   N'Buồng phòng', '0900000004', 'buong@hotel.vn', 'buongphong', 'Buongphong123'),
+(N'Đỗ Văn IT',        N'IT', '0900000005', 'it@hotel.vn', 'it', 'It123');
 
 INSERT INTO PHONG (SoPhong, LoaiPhong, Gia, TinhTrangPhong)
 VALUES
