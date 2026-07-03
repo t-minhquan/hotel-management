@@ -1,16 +1,21 @@
-# Hệ Thống Quản Lý Khách Sạn (Hotel Management System) 🏨
+# Hệ Thống Quản Lý Khách Sạn (Hotel Management System) 
 
 Đây là mã nguồn dự án xây dựng Hệ thống thông tin Quản lý Khách sạn, thuộc Đồ án môn học Thiết kế Cơ Sở Dữ Liệu nhóm 13 - Trường Đại học Giao thông Vận tải TP.HCM (UTH). 
 
 Hệ thống được thiết kế theo tiêu chuẩn Chuẩn hóa 3NF, tích hợp Triggers tự động hóa nghiệp vụ và giao diện Web quản lý trực quan.
 
-## 🛠 Công nghệ sử dụng
+## Hướng dẫn chạy
+Chạy file Shcema bằng MSSQL
+Tạo file db_config.py theo template đã có
+Chạy app.py 
+
+## Công nghệ sử dụng
 * **Backend:** Python (Flask Framework)
 * **Database:** Hệ quản trị Cơ sở dữ liệu Microsoft SQL Server (MSSQL)
 * **Frontend:** HTML5, CSS3, Jinja2 Template
 * **Thư viện giao tiếp:** `pyodbc`
 
-## 📂 Cấu trúc thư mục
+## Cấu trúc thư mục
 ```text
 hotel-management/
 ├── database/          
