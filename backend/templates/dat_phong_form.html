@@ -5,10 +5,13 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold mb-0">
-        <i class="bi bi-calendar-check-fill me-2" style="color: #ce9d4d;"></i>Quản lý Đặt phòng
+        <i class="bi bi-calendar-check-fill me-2" style="color: #ce9d4d;"></i>
+        {% if role == 'Kế toán' %}Danh sách Đặt phòng{% else %}Quản lý Đặt phòng{% endif %}
     </h4>
 </div>
 
+{# 1. ẨN FORM TẠO ĐẶT PHÒNG MỚI ĐỐI VỚI KẾ TOÁN #}
+{% if role != 'Kế toán' %}
 <div class="bg-light p-4 rounded-4 border mb-5">
     <h5 class="fw-bold mb-3 fs-6"><i class="bi bi-plus-circle-fill me-2 text-muted"></i>Tạo đặt phòng mới</h5>
     
@@ -45,12 +48,13 @@
         </div>
     </form>
 </div>
+{% endif %}
 
 <h5 class="fw-bold mb-3 fs-6">
     <i class="bi bi-list-ul me-2" style="color: #ce9d4d;"></i>Danh sách đặt phòng gần đây
 </h5>
 
-<div class="table-responsive rounded-4 border overflow-hidden shadow-sm">
+<div class="table-responsive rounded-4 border overflow-hidden shadow-sm bg-white">
     <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
             <tr>
@@ -60,7 +64,8 @@
                 <th>Ngày nhận</th>
                 <th>Ngày trả</th>
                 <th>Trạng thái</th>
-                {% if role in ['Quản lý', 'Kế toán'] %}
+                {# Chỉ hiện tiêu đề cột Thao tác nếu KHÔNG PHẢI Kế toán và là Quản lý #}
+                {% if role == 'Quản lý' %}
                 <th class="text-center">Thao tác</th>
                 {% endif %}
             </tr>
@@ -69,16 +74,17 @@
             {% for dp in danh_sach_dat_phong %}
             <tr>
                 <td class="text-center fw-bold text-muted">#{{ dp.MaDatPhong }}</td>
-                <td class="fw-semibold">{{ dp.TenKH }}</td>
+                <td class="fw-semibold text-dark">{{ dp.TenKH }}</td>
                 <td class="text-center">
                     <span class="badge bg-secondary rounded-pill px-3">{{ dp.SoPhong }}</span>
                 </td>
-                <td>{{ dp.NgayNhan }}</td>
-                <td>{{ dp.NgayTra or '<span class="text-muted fst-italic">-</span>' | safe }}</td>
+                <td class="text-muted small">{{ dp.NgayNhan }}</td>
+                <td class="text-muted small">{{ dp.NgayTra or '<span class="text-muted fst-italic">-</span>' | safe }}</td>
                 <td>
                     <span class="badge bg-light text-dark border px-2 py-1">{{ dp.TrangThai }}</span>
                 </td>
-                {% if role in ['Quản lý', 'Kế toán'] %}
+                {# Chỉ hiện nút Lập hóa đơn cho Quản lý #}
+                {% if role == 'Quản lý' %}
                 <td class="text-center">
                     <a href="{{ url_for('lap_hoa_don', ma_dat_phong=dp.MaDatPhong) }}" class="btn btn-sm btn-outline-gold rounded-pill px-3">
                         <i class="bi bi-receipt me-1"></i>Lập hóa đơn
@@ -88,7 +94,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="7" class="text-center text-muted py-5">
+                <td colspan="{% if role == 'Quản lý' %}7{% else %}6{% endif %}" class="text-center text-muted py-5">
                     <i class="bi bi-inbox fs-1 d-block mb-2 text-light"></i>
                     Chưa có lịch đặt phòng nào
                 </td>

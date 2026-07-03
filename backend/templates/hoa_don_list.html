@@ -46,6 +46,17 @@
                 <td>
                     <div class="d-flex flex-column gap-2 align-items-center px-2">
                         
+                        {# KHỐI THANH TOÁN MỚI ĐƯỢC THÊM VÀO ĐÂY #}
+                        {% if hd.TrangThai == 'Chưa thanh toán' %}
+                            <a href="{{ url_for('thanh_toan_hoa_don', ma_hd=hd.MaHD) }}" 
+                               class="btn btn-success btn-sm w-100 rounded-pill py-1" 
+                               onclick="return confirm('Xác nhận thanh toán hóa đơn này?')">
+                               <i class="bi bi-cash-coin me-1"></i> Thanh toán
+                            </a>
+                        {% else %}
+                            <span class="badge bg-secondary w-100 py-1.5">Không có thao tác</span>
+                        {% endif %}
+                        
                         <form action="{{ url_for('them_dich_vu_vao_hoa_don', ma_hd=hd.MaHD) }}" method="POST" class="d-flex gap-1 justify-content-center w-100">
                             <input type="number" name="ma_dv" placeholder="Mã DV" class="form-control form-control-sm text-center shadow-none" style="width: 75px;" required title="Nhập Mã Dịch Vụ">
                             

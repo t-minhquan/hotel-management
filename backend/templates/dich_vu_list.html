@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Danh sách dịch vụ{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bi bi-cup-hot-fill me-2" style="color: #ce9d4d;"></i>Danh sách Dịch vụ
+    </h4>
+    
+    {% if role == 'Quản lý' %}
+    <a href="#" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: #ce9d4d; border-color: #ce9d4d;">
+        <i class="bi bi-plus-lg me-1"></i> Thêm dịch vụ mới
+    </a>
+    {% endif %}
+</div>
+
+<div class="table-responsive rounded-4 border overflow-hidden shadow-sm bg-white">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+            <tr>
+                <th class="text-center text-muted">Mã DV</th>
+                <th>Tên dịch vụ</th>
+                <th>Mô tả</th>
+                <th class="text-end">Đơn giá</th>
+                
+                {% if role == 'Quản lý' %}
+                <th class="text-center" style="min-width: 120px;">Thao tác</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for dv in dich_vu_list %}
+            <tr>
+                <td class="text-center fw-bold text-muted">#{{ dv.MaDV }}</td>
+                <td class="fw-semibold">{{ dv.TenDV }}</td>
+                <td class="text-muted small">{{ dv.MoTa if dv.MoTa else 'Không có mô tả' }}</td>
+                <td class="text-end fw-bold" style="color: #ce9d4d; font-size: 1.05rem;">
+                    {{ "{:,.0f}".format(dv.DonGia) }} ₫
+                </td>
+                
+                {% if role == 'Quản lý' %}
+                <td class="text-center">
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle" title="Sửa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-danger rounded-circle" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa dịch vụ này?');" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                            <i class="bi bi-trash3"></i>
+                        </a>
+                    </div>
+                </td>
+                {% endif %}
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="{% if role == 'Quản lý' %}5{% else %}4{% endif %}" class="text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1 d-block mb-2 text-light"></i>
+                    Chưa có dữ liệu dịch vụ nào trong hệ thống
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

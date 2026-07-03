@@ -59,6 +59,7 @@
 <div class="dashboard-banner">
     <img src="https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2023/10/9/1251978/Khach-San.jpeg" alt="Luxury Hotel Banner">
 </div>
+
 <div class="mb-4 d-flex align-items-center justify-content-between">
     <div>
         <h3 class="fw-bold mb-2">Xin chào, {{ session.get('hoten') }} 👋</h3>
@@ -70,16 +71,18 @@
 
 <div class="row g-4 mt-2">
     
+    {# 1. KHÁCH HÀNG #}
     {% if role in ['Quản lý', 'Lễ tân', 'Kế toán'] %}
     <div class="col-6 col-md-4 col-lg-3">
-        <a href="{{ url_for('danh_sach_khach_hang') }}" class="dashboard-tile">
+        <a href="{{ url_or_static if false else url_for('danh_sach_khach_hang') }}" class="dashboard-tile">
             <i class="bi bi-people-fill"></i>
             <span>Khách hàng</span>
         </a>
     </div>
     {% endif %}
     
-    {% if role in ['Quản lý', 'Lễ tân'] %}
+    {# 2. ĐẶT PHÒNG #}
+    {% if role in ['Quản lý', 'Lễ tân', 'Kế toán'] %}
     <div class="col-6 col-md-4 col-lg-3">
         <a href="{{ url_for('dat_phong') }}" class="dashboard-tile">
             <i class="bi bi-calendar-check-fill"></i>
@@ -88,14 +91,18 @@
     </div>
     {% endif %}
     
-    {% if role in ['Quản lý', 'Kế toán'] %}
+    {# 3. HÓA ĐƠN #}
+    {% if role in ['Quản lý', 'Kế toán', 'Lễ tân'] %}
     <div class="col-6 col-md-4 col-lg-3">
         <a href="{{ url_for('danh_sach_hoa_don') }}" class="dashboard-tile">
             <i class="bi bi-receipt-cutoff"></i>
             <span>Hóa đơn</span>
         </a>
     </div>
+    {% endif %}
     
+    {# 4. DOANH THU #}
+    {% if role in ['Quản lý', 'Kế toán'] %}
     <div class="col-6 col-md-4 col-lg-3">
         <a href="{{ url_for('doanh_thu') }}" class="dashboard-tile">
             <i class="bi bi-graph-up-arrow"></i>
@@ -104,11 +111,41 @@
     </div>
     {% endif %}
     
-    {% if role in ['Buồng phòng', 'Quản lý'] %}
+    {# 5. TÌNH TRẠNG PHÒNG (Đã gộp và cho phép Kế toán xem) #}
+    {% if role in ['Buồng phòng', 'Quản lý', 'Lễ tân', 'Kế toán'] %}
     <div class="col-6 col-md-4 col-lg-3">
         <a href="{{ url_for('tinh_trang_phong') }}" class="dashboard-tile">
             <i class="bi bi-door-open-fill"></i>
             <span>Tình trạng phòng</span>
+        </a>
+    </div>
+    {% endif %}
+
+    {# 6. DỊCH VỤ #}
+    {% if role in ['Quản lý', 'Lễ tân', 'Kế toán', 'Buồng phòng'] %}
+    <div class="col-6 col-md-4 col-lg-3">
+        <a href="{{ url_for('danh_sach_dich_vu') }}" class="dashboard-tile">
+            <i class="bi bi-cup-hot-fill"></i>
+            <span>Dịch vụ</span>
+        </a>
+    </div>
+    {% endif %}
+
+    {# 7. NHIỆM VỤ #}
+    {% if role in ['Quản lý', 'Buồng phòng', 'IT'] %}
+    <div class="col-6 col-md-4 col-lg-3">
+        <a href="{{ url_for('danh_sach_nhiem_vu') }}" class="dashboard-tile">
+            <i class="bi bi-clipboard-check-fill"></i>
+            <span>Nhiệm vụ</span>
+        </a>
+    </div>
+    {% endif %}
+
+    {% if role in ['Quản lý', 'IT'] %}
+    <div class="col-6 col-md-4 col-lg-3">
+        <a href="{{ url_for('danh_sach_nhan_vien') }}" class="dashboard-tile">
+            <i class="bi bi-person-badge-fill"></i>
+            <span>Nhân viên</span>
         </a>
     </div>
     {% endif %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="bi bi-people-fill text-primary"></i> Quản Lý Nhân Viên</h2>
+        
+        <a href="#" class="btn btn-primary">
+            <i class="bi bi-person-plus-fill"></i> Thêm Nhân Viên Mới
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center">Mã NV</th>
+                            <th>Họ Tên</th>
+                            <th>Chức Vụ</th>
+                            <th>Tài khoản</th>
+                            <th>Liên Hệ</th>
+                            <th>Trạng Thái</th>
+                            <th class="text-center">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for nv in nhan_vien_list %}
+                        <tr>
+                            <td class="text-center">{{ nv.MaNV }}</td>
+                            <td class="fw-bold">{{ nv.HoTen }}</td>
+                            <td>
+                                {% if nv.ChucVu == 'Quản lý' %}
+                                    <span class="badge bg-danger">{{ nv.ChucVu }}</span>
+                                {% elif nv.ChucVu == 'IT' %}
+                                    <span class="badge bg-dark">{{ nv.ChucVu }}</span>
+                                {% else %}
+                                    <span class="badge bg-info text-dark">{{ nv.ChucVu }}</span>
+                                {% endif %}
+                            </td>
+                            <td><code>{{ nv.Username }}</code></td>
+                            <td>
+                                <small>
+                                    <i class="bi bi-telephone-fill text-secondary"></i> {{ nv.SDT if nv.SDT else 'Trống' }}<br>
+                                    <i class="bi bi-envelope-fill text-secondary"></i> {{ nv.Email if nv.Email else 'Trống' }}
+                                </small>
+                            </td>
+                            <td>
+                                {% if nv.TrangThai == 'Đang làm việc' %}
+                                    <span class="text-success fw-bold"><i class="bi bi-circle-fill small"></i> Đang làm việc</span>
+                                {% else %}
+                                    <span class="text-danger fw-bold"><i class="bi bi-circle-fill small"></i> Đã nghỉ</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="btn btn-sm btn-outline-primary" title="Chỉnh sửa"><i class="bi bi-pencil-square"></i></a>
+                                
+                                {% if nv.Username != session.get('username') %}
+                                <a href="#" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa nhân viên này?');" title="Xóa"><i class="bi bi-trash"></i></a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">Chưa có dữ liệu nhân viên.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -43,14 +43,17 @@ def query(sql, params=(), fetch=True, commit=False):
 
 
 # RBAC (ROLE-BASED ACCESS CONTROL)
-# Dinh nghia quyen han theo tung chuc vu
+# Dinh nghia quyen han theo tung chuc vu (Đã cập nhật các quyền dịch vụ và nhiệm vụ)
 ROLE_PERMISSIONS = {
-    "Quản lý":       {"view_revenue", "delete_invoice", "create_booking",
-                       "create_invoice", "manage_staff", "view_customers"},
-    "Lễ tân":        {"create_booking", "create_invoice", "view_customers"},
-    "Kế toán":       {"view_revenue", "create_invoice", "view_customers"},
-    "Buồng phòng":   {"view_room_status"},
-    "IT":            {"manage_staff", "view_customers"},
+    "Quản lý":       {"view_revenue", "delete_invoice", "create_booking", "create_invoice", 
+                       "update_invoice", "manage_staff", "view_customers", "view_room_status",
+                       "view_service", "view_task"},
+    "Lễ tân":        {"create_booking", "create_invoice", "update_invoice", "view_customers", 
+                       "view_service", "view_room_status"},
+    "Kế toán":       {"view_revenue", "create_invoice", "update_invoice", "view_customers", 
+                       "view_service", "view_room_status", "create_booking"},
+    "Buồng phòng":   {"view_room_status", "view_task"},
+    "IT":            {"manage_staff", "view_customers", "view_task"},
 }
 
 
@@ -172,7 +175,12 @@ def dat_phong():
     if request.method == "POST":
         ma_kh = request.form.get("ma_kh")
         ma_phong = request.form.get("ma_phong")
-        ngay_nhan = request.form.get("ngay_nhan") or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ngay_nhan_raw = request.form.get("ngay_nhan")
+        if ngay_nhan_raw:
+            # Input datetime-local tra ve dang "2026-07-04T10:30" -> chuyen thanh datetime object
+            ngay_nhan = datetime.strptime(ngay_nhan_raw, "%Y-%m-%dT%H:%M")
+        else:
+            ngay_nhan = datetime.now()
 
         query(
             """INSERT INTO DAT_PHONG (MaKH, MaPhong, MaNV, NgayNhan)
@@ -254,21 +262,77 @@ def them_dich_vu_vao_hoa_don(ma_hd):
     return redirect(url_for("danh_sach_hoa_don"))
 
 
+@app.route("/thanh-toan-hoa-don/<int:ma_hd>")
+@permission_required("update_invoice")
+def thanh_toan_hoa_don(ma_hd):
+    sql_update = """
+        UPDATE HOA_DON 
+        SET TrangThai = N'Đã thanh toán' 
+        WHERE MaHD = ? AND TrangThai = N'Chưa thanh toán'
+    """
+    try:
+        query(sql_update, (ma_hd,), fetch=False, commit=True)
+        flash("Thanh toán hóa đơn thành công!", "success")
+    except Exception as e:
+        flash(f"Lỗi khi thanh toán: {e}", "danger")
+        
+    return redirect(url_for("danh_sach_hoa_don"))
+
+
 @app.route("/hoa-don/<int:ma_hd>/xoa", methods=["POST"])
 @permission_required("delete_invoice")
 def xoa_hoa_don(ma_hd):
-    # Chi 'Quan ly' co quyen nay (Le tan bi chan theo ROLE_PERMISSIONS)
     query("DELETE FROM CHI_TIET_DICH_VU WHERE MaHD = ?", (ma_hd,), fetch=False, commit=True)
     query("DELETE FROM HOA_DON WHERE MaHD = ?", (ma_hd,), fetch=False, commit=True)
     flash("Đã xóa hóa đơn.", "success")
     return redirect(url_for("danh_sach_hoa_don"))
 
 
+# 1. QUẢN LÝ DỊCH VỤ (Ăn sáng, Giặt ủi...)
+@app.route("/dich-vu")
+@permission_required("view_service")
+def danh_sach_dich_vu():
+    sql = "SELECT * FROM DICH_VU"
+    dich_vu_list = query(sql)
+    # Đã truyền thêm role để đồng bộ giao diện hiển thị sidebar/navbar
+    return render_template("dich_vu_list.html", dich_vu_list=dich_vu_list, role=session.get("role"))
+
+
+# 2. QUẢN LÝ & PHÂN CÔNG NHIỆM VỤ
+@app.route("/nhiem-vu")
+@permission_required("view_task") 
+def danh_sach_nhiem_vu():
+    role = session.get("role")
+    ma_nv = session.get("user_id")
+    
+    if role in ['Quản lý', 'IT']:
+        sql = """
+            SELECT PC.MaPhanCong, NV.HoTen, N.TenNhiemVu, PC.NgayPhanCong, PC.GhiChu, P.SoPhong 
+            FROM PHAN_CONG_NHIEM_VU PC
+            INNER JOIN NHAN_VIEN NV ON PC.MaNV = NV.MaNV
+            INNER JOIN NHIEM_VU N ON PC.MaNhiemVu = N.MaNhiemVu
+            LEFT JOIN PHONG P ON PC.MaPhong = P.MaPhong
+        """
+        nhiem_vu_list = query(sql)
+    else: # Buồng phòng
+        sql = """
+            SELECT PC.MaPhanCong, NV.HoTen, N.TenNhiemVu, PC.NgayPhanCong, PC.GhiChu, P.SoPhong 
+            FROM PHAN_CONG_NHIEM_VU PC
+            INNER JOIN NHAN_VIEN NV ON PC.MaNV = NV.MaNV
+            INNER JOIN NHIEM_VU N ON PC.MaNhiemVu = N.MaNhiemVu
+            LEFT JOIN PHONG P ON PC.MaPhong = P.MaPhong
+            WHERE PC.MaNV = ?
+        """
+        nhiem_vu_list = query(sql, (ma_nv,))
+        
+    # Đã truyền thêm role để đồng bộ giao diện hiển thị sidebar/navbar
+    return render_template("nhiem_vu_list.html", nhiem_vu_list=nhiem_vu_list, role=role)
+
+
 # ROUTE: DOANH THU (chi Quan ly / Ke toan duoc xem)
 @app.route("/doanh-thu")
 @permission_required("view_revenue")
 def doanh_thu():
-    # Buong phong khong co quyen "view_revenue" -> se bi chan boi decorator
     tong_doanh_thu = query("""
         SELECT ISNULL(SUM(TongSoTien), 0) AS TongDoanhThu
         FROM HOA_DON
@@ -283,6 +347,18 @@ def doanh_thu():
 def tinh_trang_phong():
     phong_list = query("SELECT * FROM PHONG ORDER BY SoPhong")
     return render_template("tinh_trang_phong.html", phong_list=phong_list, role=session.get("role"))
+
+# ROUTE: NHAN VIEN
+@app.route("/nhan-vien")
+@permission_required("manage_staff") 
+def danh_sach_nhan_vien():
+    sql = """
+        SELECT MaNV, HoTen, ChucVu, SDT, Email, Username, NgayVaoLam, TrangThai 
+        FROM NHAN_VIEN
+    """
+    nhan_vien_list = query(sql)
+    
+    return render_template("nhan_vien_list.html", nhan_vien_list=nhan_vien_list, role=session.get("role"))
 
 
 if __name__ == "__main__":

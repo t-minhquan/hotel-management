@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Phân công nhiệm vụ{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bi bi-clipboard-check-fill me-2" style="color: #ce9d4d;"></i>Danh sách Phân công Nhiệm vụ
+    </h4>
+    
+    {% if role in ['IT', 'Quản lý'] %}
+    <a href="#" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: #ce9d4d; border-color: #ce9d4d;">
+        <i class="bi bi-plus-lg me-1"></i> Phân công mới
+    </a>
+    {% endif %}
+</div>
+
+<div class="table-responsive rounded-4 border overflow-hidden shadow-sm bg-white">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+            <tr>
+                <th class="text-center text-muted">Mã PC</th>
+                <th>Nhân viên nhận việc</th>
+                <th>Nhiệm vụ</th>
+                <th class="text-center">Số phòng</th>
+                <th>Ngày phân công</th>
+                <th>Ghi chú</th>
+                <th class="text-center" style="min-width: 150px;">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for nv in nhiem_vu_list %}
+            <tr>
+                <td class="text-center fw-bold text-muted">#{{ nv.MaPhanCong }}</td>
+                <td class="fw-semibold">{{ nv.HoTen }}</td>
+                <td>
+                    <span class="badge bg-light text-dark border px-2 py-1">{{ nv.TenNhiemVu }}</span>
+                </td>
+                <td class="text-center">
+                    {% if nv.SoPhong %}
+                        <span class="badge bg-secondary rounded-pill px-3">{{ nv.SoPhong }}</span>
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+                <td class="text-muted small">
+                    {{ nv.NgayPhanCong.strftime('%d/%m/%Y %H:%M') if nv.NgayPhanCong else '' }}
+                </td>
+                <td class="text-muted small">{{ nv.GhiChu if nv.GhiChu else '' }}</td>
+                
+                <td class="text-center">
+                    <div class="d-flex gap-2 justify-content-center">
+                        {% if role == 'Buồng phòng' %}
+                        <a href="#" class="btn btn-sm btn-success rounded-pill px-3 py-1 shadow-sm">
+                            <i class="bi bi-check2-square me-1"></i>Hoàn thành
+                        </a>
+                        {% endif %}
+
+                        {% if role in ['IT', 'Quản lý'] %}
+                        <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle" title="Sửa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% if role == 'IT' %}
+                        <a href="#" class="btn btn-sm btn-outline-danger rounded-circle" title="Xóa" onclick="return confirm('Xóa phân công này?');" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                            <i class="bi bi-trash3"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1 d-block mb-2 text-light"></i>
+                    Hiện tại chưa có nhiệm vụ nào được phân công.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
