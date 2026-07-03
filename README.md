@@ -1,6 +1,6 @@
 # Hệ Thống Quản Lý Khách Sạn (Hotel Management System) 🏨
 
-Đây là mã nguồn dự án xây dựng Hệ thống thông tin Quản lý Khách sạn, thuộc Đồ án môn học Phân tích Thiết kế Hệ thống - Trường Đại học Giao thông Vận tải TP.HCM (UTH). 
+Đây là mã nguồn dự án xây dựng Hệ thống thông tin Quản lý Khách sạn, thuộc Đồ án môn học Thiết kế Cơ Sở Dữ Liệu nhóm 13 - Trường Đại học Giao thông Vận tải TP.HCM (UTH). 
 
 Hệ thống được thiết kế theo tiêu chuẩn Chuẩn hóa 3NF, tích hợp Triggers tự động hóa nghiệp vụ và giao diện Web quản lý trực quan.
 
