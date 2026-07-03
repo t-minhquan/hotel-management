@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Trang chủ{% endblock %}
+
+{% block content %}
+<style>
+    /* CSS dành riêng cho các thẻ chức năng (Tiles) trên Dashboard */
+    .dashboard-tile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        background-color: #ffffff;
+        border: 1px solid #eaeaea;
+        border-radius: 16px;
+        text-decoration: none;
+        color: #333333;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        height: 100%;
+    }
+    .dashboard-tile:hover {
+        transform: translateY(-5px); /* Hiệu ứng nhấc thẻ lên */
+        box-shadow: 0 10px 25px rgba(206, 157, 77, 0.2); /* Bóng vàng gold */
+        border-color: #ce9d4d;
+        color: #ce9d4d;
+    }
+    .dashboard-tile i {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+        color: #ce9d4d; /* Màu icon chủ đạo */
+        transition: all 0.3s ease;
+    }
+    .dashboard-tile:hover i {
+        transform: scale(1.1); /* Phóng to icon nhẹ khi di chuột */
+    }
+    .dashboard-tile span {
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+
+    /* CSS cho Banner ảnh */
+    .dashboard-banner {
+        width: 100%;
+        height: 300px; /* Chiều cao ảnh */
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .dashboard-banner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Giúp ảnh không bị méo tỉ lệ */
+    }
+</style>
+
+<div class="dashboard-banner">
+    <img src="https://media-cdn-v2.laodong.vn/Storage/NewsPortal/2023/10/9/1251978/Khach-San.jpeg" alt="Luxury Hotel Banner">
+</div>
+<div class="mb-4 d-flex align-items-center justify-content-between">
+    <div>
+        <h3 class="fw-bold mb-2">Xin chào, {{ session.get('hoten') }} 👋</h3>
+        <p class="text-muted fw-medium mb-0">
+            Chức vụ hiện tại: <span class="badge role-badge ms-1 rounded-pill">{{ role }}</span>
+        </p>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    
+    {% if role in ['Quản lý', 'Lễ tân', 'Kế toán'] %}
+    <div class="col-6 col-md-4 col-lg-3">
+        <a href="{{ url_for('danh_sach_khach_hang') }}" class="dashboard-tile">
+            <i class="bi bi-people-fill"></i>
+            <span>Khách hàng</span>
+        </a>
+    </div>
+    {% endif %}
+    
+    {% if role in ['Quản lý', 'Lễ tân'] %}
+    <div class="col-6 col-md-4 col-lg-3">
+        <a href="{{ url_for('dat_phong') }}" class="dashboard-tile">
+            <i class="bi bi-calendar-check-fill"></i>
+            <span>Đặt phòng</span>
+        </a>
+    </div>
+    {% endif %}
+    
+    {% if role in ['Quản lý', 'Kế toán'] %}
+    <div class="col-6 col-md-4 col-lg-3">
+        <a href="{{ url_for('danh_sach_hoa_don') }}" class="dashboard-tile">
+            <i class="bi bi-receipt-cutoff"></i>
+            <span>Hóa đơn</span>
+        </a>
+    </div>
+    
+    <div class="col-6 col-md-4 col-lg-3">
+        <a href="{{ url_for('doanh_thu') }}" class="dashboard-tile">
+            <i class="bi bi-graph-up-arrow"></i>
+            <span>Doanh thu</span>
+        </a>
+    </div>
+    {% endif %}
+    
+    {% if role in ['Buồng phòng', 'Quản lý'] %}
+    <div class="col-6 col-md-4 col-lg-3">
+        <a href="{{ url_for('tinh_trang_phong') }}" class="dashboard-tile">
+            <i class="bi bi-door-open-fill"></i>
+            <span>Tình trạng phòng</span>
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

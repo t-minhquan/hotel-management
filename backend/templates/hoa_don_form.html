@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Lập hóa đơn{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bi bi-receipt me-2" style="color: #ce9d4d;"></i>Lập hóa đơn
+    </h4>
+    <a href="{{ url_for('dat_phong') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mx-auto mt-2" style="max-width: 600px;">
+    
+    <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 rounded-circle mb-3" style="width: 80px; height: 80px;">
+            <i class="bi bi-file-earmark-text text-warning" style="font-size: 2.5rem;"></i>
+        </div>
+        <h5 class="fw-bold fs-4">Xác nhận tạo hóa đơn</h5>
+        <p class="text-muted mt-2">Áp dụng cho Mã đặt phòng: 
+            <span class="badge bg-secondary rounded-pill fs-6 px-3 py-2 ms-1 shadow-sm">#{{ ma_dat_phong }}</span>
+        </p>
+    </div>
+
+    <div class="alert alert-light border shadow-sm rounded-4 d-flex align-items-center mb-4 p-3" role="alert">
+        <i class="bi bi-info-circle-fill fs-3 me-3" style="color: #ce9d4d;"></i>
+        <div class="text-muted" style="font-size: 0.95rem;">
+            Hóa đơn mới sẽ được khởi tạo với <strong>tổng tiền ban đầu là 0 VNĐ</strong>. Mọi chi phí phòng và dịch vụ phát sinh sẽ được cộng dồn tự động ở bước tiếp theo.
+        </div>
+    </div>
+
+    <form method="POST">
+        <div class="d-flex justify-content-center gap-3">
+            <button type="submit" class="btn btn-custom px-4 py-2 rounded-pill shadow-sm">
+                <i class="bi bi-check2-circle me-2"></i>Tạo hóa đơn ngay
+            </button>
+            <a href="{{ url_for('dat_phong') }}" class="btn btn-light border px-4 py-2 rounded-pill fw-medium text-muted">
+                Hủy bỏ
+            </a>
+        </div>
+    </form>
+    
+</div>
+{% endblock %}

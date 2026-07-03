@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Đặt phòng{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bi bi-calendar-check-fill me-2" style="color: #ce9d4d;"></i>Quản lý Đặt phòng
+    </h4>
+</div>
+
+<div class="bg-light p-4 rounded-4 border mb-5">
+    <h5 class="fw-bold mb-3 fs-6"><i class="bi bi-plus-circle-fill me-2 text-muted"></i>Tạo đặt phòng mới</h5>
+    
+    <form method="POST" class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted small">Khách hàng <span class="text-danger">*</span></label>
+            <select name="ma_kh" class="form-select shadow-sm" required>
+                <option value="" disabled selected>-- Chọn khách hàng --</option>
+                {% for kh in khach_hang_list %}
+                <option value="{{ kh.MaKH }}">{{ kh.HoTen }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted small">Phòng (còn trống) <span class="text-danger">*</span></label>
+            <select name="ma_phong" class="form-select shadow-sm" required>
+                <option value="" disabled selected>-- Chọn phòng --</option>
+                {% for p in phong_trong %}
+                <option value="{{ p.MaPhong }}">{{ p.SoPhong }} - {{ p.LoaiPhong }} ({{ p.Gia }} đ)</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="col-md-4">
+            <label class="form-label fw-semibold text-muted small">Ngày nhận phòng</label>
+            <input type="datetime-local" name="ngay_nhan" class="form-control shadow-sm">
+        </div>
+        
+        <div class="col-12 mt-4">
+            <button type="submit" class="btn btn-custom px-4 shadow-sm">
+                <i class="bi bi-check-circle-fill me-2"></i>Xác nhận đặt phòng
+            </button>
+        </div>
+    </form>
+</div>
+
+<h5 class="fw-bold mb-3 fs-6">
+    <i class="bi bi-list-ul me-2" style="color: #ce9d4d;"></i>Danh sách đặt phòng gần đây
+</h5>
+
+<div class="table-responsive rounded-4 border overflow-hidden shadow-sm">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+            <tr>
+                <th class="text-center text-muted">Mã</th>
+                <th>Khách hàng</th>
+                <th class="text-center">Phòng</th>
+                <th>Ngày nhận</th>
+                <th>Ngày trả</th>
+                <th>Trạng thái</th>
+                {% if role in ['Quản lý', 'Kế toán'] %}
+                <th class="text-center">Thao tác</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for dp in danh_sach_dat_phong %}
+            <tr>
+                <td class="text-center fw-bold text-muted">#{{ dp.MaDatPhong }}</td>
+                <td class="fw-semibold">{{ dp.TenKH }}</td>
+                <td class="text-center">
+                    <span class="badge bg-secondary rounded-pill px-3">{{ dp.SoPhong }}</span>
+                </td>
+                <td>{{ dp.NgayNhan }}</td>
+                <td>{{ dp.NgayTra or '<span class="text-muted fst-italic">-</span>' | safe }}</td>
+                <td>
+                    <span class="badge bg-light text-dark border px-2 py-1">{{ dp.TrangThai }}</span>
+                </td>
+                {% if role in ['Quản lý', 'Kế toán'] %}
+                <td class="text-center">
+                    <a href="{{ url_for('lap_hoa_don', ma_dat_phong=dp.MaDatPhong) }}" class="btn btn-sm btn-outline-gold rounded-pill px-3">
+                        <i class="bi bi-receipt me-1"></i>Lập hóa đơn
+                    </a>
+                </td>
+                {% endif %}
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1 d-block mb-2 text-light"></i>
+                    Chưa có lịch đặt phòng nào
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
