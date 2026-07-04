@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Cập nhật Dịch vụ{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bi bi-pencil-square me-2" style="color: #ce9d4d;"></i>Chỉnh sửa dịch vụ
+    </h4>
+    <a href="{{ url_for('danh_sach_dich_vu') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mx-auto" style="max-width: 600px;">
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-muted small">Mã dịch vụ</label>
+            <input type="text" class="form-control bg-light" value="#{{ dich_vu.MaDV }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-muted small">Tên dịch vụ <span class="text-danger">*</span></label>
+            <input type="text" name="ten_dv" class="form-control" value="{{ dich_vu.TenDV }}" required autofocus>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-muted small">Đơn giá (VNĐ) <span class="text-danger">*</span></label>
+            <input type="number" name="don_gia" class="form-control" value="{{ dich_vu.DonGia | int }}" min="0" step="1000" required>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label fw-semibold text-muted small">Mô tả</label>
+            <textarea name="mo_ta" class="form-control" rows="3">{{ dich_vu.MoTa if dich_vu.MoTa else '' }}</textarea>
+        </div>
+        
+        <hr class="text-muted mb-4 opacity-25">
+
+        <div class="d-flex justify-content-end gap-3">
+            <button type="submit" class="btn btn-custom px-4 py-2 rounded-pill shadow-sm">
+                <i class="bi bi-floppy-fill me-2"></i>Lưu thay đổi
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
