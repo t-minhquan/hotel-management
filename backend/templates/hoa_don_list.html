@@ -25,7 +25,7 @@
         <tbody>
             {% for hd in hoa_don_list %}
             <tr>
-                <td class="text-center fw-bold text-muted">#{{ hd.MaHD }}</td>
+                <td class="text-center fw-bold text-muted">#{{ loop.index }}</td>
                 
                 <td class="fw-semibold">{{ hd.TenKH }}</td>
                 
@@ -59,10 +59,9 @@
                         
                         <form action="{{ url_for('them_dich_vu_vao_hoa_don', ma_hd=hd.MaHD) }}" method="POST" class="d-flex gap-1 justify-content-center w-100">
                             <select name="ma_dv" class="form-control form-control-sm text-center shadow-none" style="width: 75px;" required title="Chọn Mã Dịch Vụ">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
+                                {% for dv in dich_vu_list %}
+                                <option value="{{ dv.MaDV }}">{{ loop.index }}</option>
+                                {% endfor %}
                             </select>
                             
                             <input type="number" name="so_luong" value="1" min="1" class="form-control form-control-sm text-center shadow-none" style="width: 60px;" required title="Số lượng">

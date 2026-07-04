@@ -47,7 +47,7 @@ def query(sql, params=(), fetch=True, commit=False):
 ROLE_PERMISSIONS = {
     "Quản lý":       {"view_revenue", "delete_invoice", "create_booking", "create_invoice", 
                        "update_invoice", "manage_staff", "view_customers", "view_room_status",
-                       "view_service", "view_task", "update_service"},
+                       "view_service", "view_task", "update_service", "create_service", "delete_service"},
     "Lễ tân":        {"create_booking", "create_invoice", "update_invoice", "view_customers", 
                        "view_service", "view_room_status"},
     "Kế toán":       {"view_revenue", "create_invoice", "update_invoice", "view_customers", 
@@ -224,7 +224,9 @@ def danh_sach_hoa_don():
         JOIN PHONG P ON DP.MaPhong = P.MaPhong
         ORDER BY HD.MaHD DESC
     """)
-    return render_template("hoa_don_list.html", hoa_don_list=hoa_don_list, role=session.get("role"))
+    # Lấy danh sách dịch vụ để sinh option cho select mã dịch vụ
+    dich_vu_list = query("SELECT MaDV FROM DICH_VU ORDER BY MaDV")
+    return render_template("hoa_don_list.html", hoa_don_list=hoa_don_list, dich_vu_list=dich_vu_list, role=session.get("role"))
 
 
 @app.route("/hoa-don/lap/<int:ma_dat_phong>", methods=["GET", "POST"])
@@ -324,6 +326,37 @@ def sua_dich_vu(ma_dv):
 
     return render_template("dich_vu_form.html", dich_vu=dich_vu_row[0], role=session.get("role"))
 
+@app.route("/dich-vu/them", methods=["GET", "POST"])
+@permission_required("create_service")
+def them_dich_vu():
+    if request.method == "POST":
+        ten_dv = request.form.get("ten_dv")
+        don_gia = request.form.get("don_gia")
+        mo_ta = request.form.get("mo_ta")
+
+        # Thực thi câu lệnh INSERT vào DB
+        query(
+            "INSERT INTO DICH_VU (TenDV, DonGia, MoTa) VALUES (?, ?, ?)",
+            (ten_dv, don_gia, mo_ta),
+            fetch=False, commit=True
+        )
+        flash("Thêm dịch vụ mới thành công.", "success")
+        return redirect(url_for("danh_sach_dich_vu"))
+
+    return render_template("dich_vu_add.html", role=session.get("role"))
+
+@app.route("/dich-vu/xoa/<int:ma_dv>", methods=["POST"])
+@permission_required("delete_service")
+def xoa_dich_vu(ma_dv):
+    try:
+        # Thử xóa dịch vụ khỏi CSDL
+        query("DELETE FROM DICH_VU WHERE MaDV = ?", (ma_dv,), fetch=False, commit=True)
+        flash("Đã xóa dịch vụ thành công.", "success")
+    except Exception as e:
+        # Nếu dịch vụ đã nằm trong hóa đơn, MSSQL sẽ chặn lại. Bắt lỗi tại đây:
+        flash("Không thể xóa dịch vụ này vì đã được sử dụng trong hóa đơn khách hàng.", "danger")
+        
+    return redirect(url_for("danh_sach_dich_vu"))
 
 # 2. QUẢN LÝ & PHÂN CÔNG NHIỆM VỤ
 @app.route("/nhiem-vu")

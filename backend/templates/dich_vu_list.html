@@ -9,7 +9,7 @@
     </h4>
     
     {% if role == 'Quản lý' %}
-    <a href="#" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: #ce9d4d; border-color: #ce9d4d;">
+    <a href="{{ url_for('them_dich_vu') }}" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: #ce9d4d; border-color: #ce9d4d;">
         <i class="bi bi-plus-lg me-1"></i> Thêm dịch vụ mới
     </a>
     {% endif %}
@@ -32,7 +32,7 @@
         <tbody>
             {% for dv in dich_vu_list %}
             <tr>
-                <td class="text-center fw-bold text-muted">#{{ dv.MaDV }}</td>
+                <td class="text-center fw-bold text-muted">#{{ loop.index }}</td>
                 <td class="fw-semibold">{{ dv.TenDV }}</td>
                 <td class="text-muted small">{{ dv.MoTa if dv.MoTa else 'Không có mô tả' }}</td>
                 <td class="text-end fw-bold" style="color: #ce9d4d; font-size: 1.05rem;">
@@ -45,9 +45,12 @@
                         <a href="{{ url_for('sua_dich_vu', ma_dv=dv.MaDV) }}" class="btn btn-sm btn-outline-secondary rounded-circle" title="Sửa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <a href="#" class="btn btn-sm btn-outline-danger rounded-circle" title="Xóa" onclick="return confirm('Bạn có chắc muốn xóa dịch vụ này?');" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
-                            <i class="bi bi-trash3"></i>
-                        </a>
+                        
+                        <form action="{{ url_for('xoa_dich_vu', ma_dv=dv.MaDV) }}" method="POST" class="m-0" onsubmit="return confirm('Bạn có chắc chắn muốn xóa dịch vụ này không?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Xóa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
                     </div>
                 </td>
                 {% endif %}

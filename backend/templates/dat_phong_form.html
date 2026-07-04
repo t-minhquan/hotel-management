@@ -73,7 +73,7 @@
         <tbody>
             {% for dp in danh_sach_dat_phong %}
             <tr>
-                <td class="text-center fw-bold text-muted">#{{ dp.MaDatPhong }}</td>
+                <td class="text-center fw-bold text-muted">#{{ loop.index }}</td>
                 <td class="fw-semibold text-dark">{{ dp.TenKH }}</td>
                 <td class="text-center">
                     <span class="badge bg-secondary rounded-pill px-3">{{ dp.SoPhong }}</span>
