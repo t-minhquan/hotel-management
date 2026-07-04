@@ -47,7 +47,7 @@ def query(sql, params=(), fetch=True, commit=False):
 ROLE_PERMISSIONS = {
     "Quản lý":       {"view_revenue", "delete_invoice", "create_booking", "create_invoice", 
                        "update_invoice", "manage_staff", "view_customers", "view_room_status",
-                       "view_service", "view_task"},
+                       "view_service", "view_task", "update_service"},
     "Lễ tân":        {"create_booking", "create_invoice", "update_invoice", "view_customers", 
                        "view_service", "view_room_status"},
     "Kế toán":       {"view_revenue", "create_invoice", "update_invoice", "view_customers", 
@@ -296,6 +296,33 @@ def danh_sach_dich_vu():
     dich_vu_list = query(sql)
     # Đã truyền thêm role để đồng bộ giao diện hiển thị sidebar/navbar
     return render_template("dich_vu_list.html", dich_vu_list=dich_vu_list, role=session.get("role"))
+
+
+@app.route("/dich-vu/sua/<int:ma_dv>", methods=["GET", "POST"])
+@permission_required("update_service")
+def sua_dich_vu(ma_dv):
+    if request.method == "POST":
+        ten_dv = request.form.get("ten_dv")
+        don_gia = request.form.get("don_gia")
+        mo_ta = request.form.get("mo_ta")
+
+        # Thực thi câu lệnh UPDATE vào DB
+        query(
+            "UPDATE DICH_VU SET TenDV = ?, DonGia = ?, MoTa = ? WHERE MaDV = ?",
+            (ten_dv, don_gia, mo_ta, ma_dv),
+            fetch=False, commit=True
+        )
+        flash("Cập nhật thông tin dịch vụ thành công.", "success")
+        return redirect(url_for("danh_sach_dich_vu"))
+
+    # Dành cho phương thức GET: Lấy dữ liệu cũ để hiển thị lên Form
+    dich_vu_row = query("SELECT * FROM DICH_VU WHERE MaDV = ?", (ma_dv,))
+    
+    if not dich_vu_row:
+        flash("Không tìm thấy dịch vụ này.", "danger")
+        return redirect(url_for("danh_sach_dich_vu"))
+
+    return render_template("dich_vu_form.html", dich_vu=dich_vu_row[0], role=session.get("role"))
 
 
 # 2. QUẢN LÝ & PHÂN CÔNG NHIỆM VỤ
