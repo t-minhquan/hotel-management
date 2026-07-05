@@ -406,7 +406,15 @@ def them_phan_cong():
         return redirect(url_for("danh_sach_nhiem_vu"))
 
     # Lấy dữ liệu cho các thẻ <select>
-    nhan_vien_list = query("SELECT MaNV, HoTen, ChucVu FROM NHAN_VIEN WHERE TrangThai = N'Đang làm việc'")
+    nhan_vien_list = query("""
+        SELECT NV.MaNV, NV.HoTen, NV.ChucVu
+        FROM NHAN_VIEN NV
+        WHERE EXISTS (
+            SELECT 1
+            FROM PHAN_CONG_NHIEM_VU PC
+            WHERE PC.MaNV = NV.MaNV
+        )
+    """)
     danh_muc_nhiem_vu = query("SELECT MaNhiemVu, TenNhiemVu FROM NHIEM_VU")
     phong_list = query("SELECT MaPhong, SoPhong FROM PHONG")
 
@@ -437,7 +445,15 @@ def sua_phan_cong(ma_pc):
         flash("Không tìm thấy phân công.", "danger")
         return redirect(url_for("danh_sach_nhiem_vu"))
 
-    nhan_vien_list = query("SELECT MaNV, HoTen, ChucVu FROM NHAN_VIEN WHERE TrangThai = N'Đang làm việc'")
+    nhan_vien_list = query("""
+        SELECT NV.MaNV, NV.HoTen, NV.ChucVu
+        FROM NHAN_VIEN NV
+        WHERE EXISTS (
+            SELECT 1
+            FROM PHAN_CONG_NHIEM_VU PC
+            WHERE PC.MaNV = NV.MaNV
+        )
+    """)
     danh_muc_nhiem_vu = query("SELECT MaNhiemVu, TenNhiemVu FROM NHIEM_VU")
     phong_list = query("SELECT MaPhong, SoPhong FROM PHONG")
 
@@ -494,8 +510,16 @@ def tinh_trang_phong():
 @permission_required("manage_staff") 
 def danh_sach_nhan_vien():
     sql = """
-        SELECT MaNV, HoTen, ChucVu, SDT, Email, Username, NgayVaoLam, TrangThai 
-        FROM NHAN_VIEN
+        SELECT NV.MaNV, NV.HoTen, NV.ChucVu, NV.SDT, NV.Email, NV.Username, NV.NgayVaoLam,
+               CASE
+                   WHEN EXISTS (
+                       SELECT 1
+                       FROM PHAN_CONG_NHIEM_VU PC
+                       WHERE PC.MaNV = NV.MaNV
+                   ) THEN N'Đang làm việc'
+                   ELSE N'Đang nghỉ'
+               END AS TrangThai
+        FROM NHAN_VIEN NV
     """
     nhan_vien_list = query(sql)
     
