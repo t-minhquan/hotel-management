@@ -8,7 +8,7 @@
         <i class="bi bi-person-badge-fill me-2" style="color: #ce9d4d;"></i>Quản lý Nhân viên
     </h4>
     
-    <a href="#" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: #ce9d4d; border-color: #ce9d4d;">
+    <a href="{{ url_for('them_nhan_vien') }}" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: #ce9d4d; border-color: #ce9d4d;">
         <i class="bi bi-plus-lg me-1"></i> Thêm nhân viên mới
     </a>
 </div>
@@ -62,14 +62,16 @@
                 </td>
                 <td class="text-center">
                     <div class="d-flex gap-2 justify-content-center">
-                        <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle" title="Chỉnh sửa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                        <a href="{{ url_for('sua_nhan_vien', ma_nv=nv.MaNV) }}" class="btn btn-sm btn-outline-secondary rounded-circle" title="Chỉnh sửa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
                             <i class="bi bi-pencil-square"></i>
                         </a>
                         
                         {% if nv.Username != session.get('username') %}
-                        <a href="#" class="btn btn-sm btn-outline-danger rounded-circle" onclick="return confirm('Bạn có chắc muốn xóa nhân viên này?');" title="Xóa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
-                            <i class="bi bi-trash3"></i>
-                        </a>
+                        <form action="{{ url_for('xoa_nhan_vien', ma_nv=nv.MaNV) }}" method="POST" class="m-0" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhân viên này không?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Xóa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
                         {% endif %}
                     </div>
                 </td>

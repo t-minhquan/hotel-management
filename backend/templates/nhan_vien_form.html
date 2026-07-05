@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Thêm' if action == 'Them' else 'Sửa' }} Nhân Viên{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bi bi-person-badge-fill me-2" style="color: #ce9d4d;"></i>
+        {{ 'Thêm Nhân Viên Mới' if action == 'Them' else 'Cập Nhật Nhân Viên' }}
+    </h4>
+    <a href="{{ url_for('danh_sach_nhan_vien') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mx-auto" style="max-width: 800px;">
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold text-muted small">Họ và tên <span class="text-danger">*</span></label>
+                <input type="text" name="hoten" class="form-control" value="{{ nv.HoTen if nv else '' }}" required autofocus>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold text-muted small">Chức vụ <span class="text-danger">*</span></label>
+                <select name="chucvu" class="form-select" required>
+                    <option value="" disabled {{ 'selected' if action == 'Them' else '' }}>-- Chọn chức vụ --</option>
+                    {% for cv in ['Quản lý', 'Lễ tân', 'Kế toán', 'Buồng phòng', 'IT'] %}
+                        <option value="{{ cv }}" {% if action == 'Sua' and nv.ChucVu == cv %}selected{% endif %}>{{ cv }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold text-muted small">Số điện thoại</label>
+                <input type="text" name="sdt" class="form-control" value="{{ nv.SDT if nv and nv.SDT else '' }}">
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold text-muted small">Email</label>
+                <input type="email" name="email" class="form-control" value="{{ nv.Email if nv and nv.Email else '' }}">
+            </div>
+
+            {% if action == 'Them' %}
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold text-muted small">Tên đăng nhập (Username) <span class="text-danger">*</span></label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold text-muted small">Mật khẩu khởi tạo <span class="text-danger">*</span></label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            {% else %}
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold text-muted small">Tên đăng nhập</label>
+                <input type="text" class="form-control bg-light" value="{{ nv.Username }}" disabled>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold text-muted small">Trạng thái làm việc <span class="text-danger">*</span></label>
+                <select name="trangthai" class="form-select" required>
+                    <option value="Đang làm việc" {% if nv.TrangThai == 'Đang làm việc' %}selected{% endif %}>Đang làm việc</option>
+                    <option value="Đã nghỉ" {% if nv.TrangThai == 'Đã nghỉ' %}selected{% endif %}>Đã nghỉ</option>
+                </select>
+            </div>
+            {% endif %}
+        </div>
+        
+        <hr class="text-muted mb-4 opacity-25">
+
+        <div class="d-flex justify-content-end gap-3">
+            <button type="submit" class="btn btn-custom px-4 py-2 rounded-pill shadow-sm">
+                <i class="bi bi-floppy-fill me-2"></i>{{ 'Tạo tài khoản' if action == 'Them' else 'Lưu thay đổi' }}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

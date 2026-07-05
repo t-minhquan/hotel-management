@@ -47,13 +47,13 @@ def query(sql, params=(), fetch=True, commit=False):
 ROLE_PERMISSIONS = {
     "Quản lý":       {"view_revenue", "delete_invoice", "create_booking", "create_invoice", 
                        "update_invoice", "manage_staff", "view_customers", "view_room_status",
-                       "view_service", "view_task", "update_service", "create_service", "delete_service"},
+                       "view_service", "view_task", "update_service", "create_service", "delete_service", "manage_task"},
     "Lễ tân":        {"create_booking", "create_invoice", "update_invoice", "view_customers", 
                        "view_service", "view_room_status"},
     "Kế toán":       {"view_revenue", "create_invoice", "update_invoice", "view_customers", 
                        "view_service", "view_room_status", "create_booking"},
     "Buồng phòng":   {"view_room_status", "view_task"},
-    "IT":            {"manage_staff", "view_customers", "view_task"},
+    "IT":            {"manage_staff", "view_customers", "view_task", "manage_task"},
 }
 
 
@@ -388,6 +388,87 @@ def danh_sach_nhiem_vu():
     # Đã truyền thêm role để đồng bộ giao diện hiển thị sidebar/navbar
     return render_template("nhiem_vu_list.html", nhiem_vu_list=nhiem_vu_list, role=role)
 
+# ROUTE: THÊM PHÂN CÔNG NHIỆM VỤ
+@app.route("/nhiem-vu/them", methods=["GET", "POST"])
+@permission_required("manage_task")
+def them_phan_cong():
+    if request.method == "POST":
+        ma_nv = request.form.get("ma_nv")
+        ma_nhiem_vu = request.form.get("ma_nhiem_vu")
+        ma_phong = request.form.get("ma_phong") or None  # Có thể null
+        ghi_chu = request.form.get("ghi_chu")
+
+        query("""
+            INSERT INTO PHAN_CONG_NHIEM_VU (MaNV, MaNhiemVu, MaPhong, GhiChu)
+            VALUES (?, ?, ?, ?)
+        """, (ma_nv, ma_nhiem_vu, ma_phong, ghi_chu), fetch=False, commit=True)
+        flash("Phân công nhiệm vụ mới thành công.", "success")
+        return redirect(url_for("danh_sach_nhiem_vu"))
+
+    # Lấy dữ liệu cho các thẻ <select>
+    nhan_vien_list = query("SELECT MaNV, HoTen, ChucVu FROM NHAN_VIEN WHERE TrangThai = N'Đang làm việc'")
+    danh_muc_nhiem_vu = query("SELECT MaNhiemVu, TenNhiemVu FROM NHIEM_VU")
+    phong_list = query("SELECT MaPhong, SoPhong FROM PHONG")
+
+    return render_template("nhiem_vu_form.html", action="Them", 
+                           nhan_vien_list=nhan_vien_list, danh_muc_nhiem_vu=danh_muc_nhiem_vu, 
+                           phong_list=phong_list, role=session.get("role"))
+
+# ROUTE: SỬA PHÂN CÔNG NHIỆM VỤ
+@app.route("/nhiem-vu/sua/<int:ma_pc>", methods=["GET", "POST"])
+@permission_required("manage_task")
+def sua_phan_cong(ma_pc):
+    if request.method == "POST":
+        ma_nv = request.form.get("ma_nv")
+        ma_nhiem_vu = request.form.get("ma_nhiem_vu")
+        ma_phong = request.form.get("ma_phong") or None
+        ghi_chu = request.form.get("ghi_chu")
+
+        query("""
+            UPDATE PHAN_CONG_NHIEM_VU 
+            SET MaNV = ?, MaNhiemVu = ?, MaPhong = ?, GhiChu = ?
+            WHERE MaPhanCong = ?
+        """, (ma_nv, ma_nhiem_vu, ma_phong, ghi_chu, ma_pc), fetch=False, commit=True)
+        flash("Cập nhật phân công thành công.", "success")
+        return redirect(url_for("danh_sach_nhiem_vu"))
+
+    phan_cong_row = query("SELECT * FROM PHAN_CONG_NHIEM_VU WHERE MaPhanCong = ?", (ma_pc,))
+    if not phan_cong_row:
+        flash("Không tìm thấy phân công.", "danger")
+        return redirect(url_for("danh_sach_nhiem_vu"))
+
+    nhan_vien_list = query("SELECT MaNV, HoTen, ChucVu FROM NHAN_VIEN WHERE TrangThai = N'Đang làm việc'")
+    danh_muc_nhiem_vu = query("SELECT MaNhiemVu, TenNhiemVu FROM NHIEM_VU")
+    phong_list = query("SELECT MaPhong, SoPhong FROM PHONG")
+
+    return render_template("nhiem_vu_form.html", action="Sua", phan_cong=phan_cong_row[0], 
+                           nhan_vien_list=nhan_vien_list, danh_muc_nhiem_vu=danh_muc_nhiem_vu, 
+                           phong_list=phong_list, role=session.get("role"))
+
+# ROUTE: XÓA PHÂN CÔNG NHIỆM VỤ
+@app.route("/nhiem-vu/xoa/<int:ma_pc>", methods=["POST"])
+@permission_required("manage_task")
+def xoa_phan_cong(ma_pc):
+    query("DELETE FROM PHAN_CONG_NHIEM_VU WHERE MaPhanCong = ?", (ma_pc,), fetch=False, commit=True)
+    flash("Đã xóa phân công nhiệm vụ.", "success")
+    return redirect(url_for("danh_sach_nhiem_vu"))
+
+@app.route("/danh-muc-nhiem-vu/them", methods=["GET", "POST"])
+@permission_required("manage_task")
+def them_danh_muc_nhiem_vu():
+    if request.method == "POST":
+        ten_nhiem_vu = request.form.get("ten_nhiem_vu")
+        mo_ta = request.form.get("mo_ta")
+
+        query("""
+            INSERT INTO NHIEM_VU (TenNhiemVu, MoTa)
+            VALUES (?, ?)
+        """, (ten_nhiem_vu, mo_ta), fetch=False, commit=True)
+        
+        flash("Đã thêm đầu mục công việc mới vào hệ thống.", "success")
+        return redirect(url_for("danh_sach_nhiem_vu"))
+
+    return render_template("danh_muc_nhiem_vu_form.html", role=session.get("role"))
 
 # ROUTE: DOANH THU (chi Quan ly / Ke toan duoc xem)
 @app.route("/doanh-thu")
@@ -420,6 +501,72 @@ def danh_sach_nhan_vien():
     
     return render_template("nhan_vien_list.html", nhan_vien_list=nhan_vien_list, role=session.get("role"))
 
+# ROUTE: THÊM NHÂN VIÊN
+@app.route("/nhan-vien/them", methods=["GET", "POST"])
+@permission_required("manage_staff")
+def them_nhan_vien():
+    if request.method == "POST":
+        hoten = request.form.get("hoten")
+        chucvu = request.form.get("chucvu")
+        sdt = request.form.get("sdt")
+        email = request.form.get("email")
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        try:
+            query("""
+                INSERT INTO NHAN_VIEN (HoTen, ChucVu, SDT, Email, Username, PasswordHash)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (hoten, chucvu, sdt, email, username, password), fetch=False, commit=True)
+            flash("Thêm nhân viên mới thành công.", "success")
+            return redirect(url_for("danh_sach_nhan_vien"))
+        except Exception as e:
+            flash("Lỗi: Tên đăng nhập (Username) đã tồn tại hoặc dữ liệu không hợp lệ.", "danger")
+
+    return render_template("nhan_vien_form.html", action="Them", role=session.get("role"))
+
+# ROUTE: SỬA NHÂN VIÊN
+@app.route("/nhan-vien/sua/<int:ma_nv>", methods=["GET", "POST"])
+@permission_required("manage_staff")
+def sua_nhan_vien(ma_nv):
+    if request.method == "POST":
+        hoten = request.form.get("hoten")
+        chucvu = request.form.get("chucvu")
+        sdt = request.form.get("sdt")
+        email = request.form.get("email")
+        trangthai = request.form.get("trangthai")
+
+        query("""
+            UPDATE NHAN_VIEN 
+            SET HoTen = ?, ChucVu = ?, SDT = ?, Email = ?, TrangThai = ?
+            WHERE MaNV = ?
+        """, (hoten, chucvu, sdt, email, trangthai, ma_nv), fetch=False, commit=True)
+        flash("Cập nhật thông tin nhân viên thành công.", "success")
+        return redirect(url_for("danh_sach_nhan_vien"))
+
+    nhan_vien_row = query("SELECT * FROM NHAN_VIEN WHERE MaNV = ?", (ma_nv,))
+    if not nhan_vien_row:
+        flash("Không tìm thấy nhân viên này.", "danger")
+        return redirect(url_for("danh_sach_nhan_vien"))
+
+    return render_template("nhan_vien_form.html", action="Sua", nv=nhan_vien_row[0], role=session.get("role"))
+
+# ROUTE: XÓA NHÂN VIÊN
+@app.route("/nhan-vien/xoa/<int:ma_nv>", methods=["POST"])
+@permission_required("manage_staff")
+def xoa_nhan_vien(ma_nv):
+    # Chống tự hủy: Không cho phép tự xóa tài khoản của chính mình đang đăng nhập
+    if ma_nv == session.get("user_id"):
+        flash("Bạn không thể tự xóa tài khoản của chính mình!", "danger")
+        return redirect(url_for("danh_sach_nhan_vien"))
+
+    try:
+        query("DELETE FROM NHAN_VIEN WHERE MaNV = ?", (ma_nv,), fetch=False, commit=True)
+        flash("Đã xóa nhân viên khỏi hệ thống.", "success")
+    except Exception as e:
+        flash("Nhân viên này đã có dữ liệu lịch sử (Đặt phòng, Nhiệm vụ...). Hãy dùng chức năng Sửa để đổi trạng thái thành 'Đã nghỉ' thay vì xóa hẳn.", "warning")
+
+    return redirect(url_for("danh_sach_nhan_vien"))
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)

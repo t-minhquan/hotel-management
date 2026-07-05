@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Tạo Đầu Mục Nhiệm Vụ{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bi bi-folder-plus me-2" style="color: #ce9d4d;"></i>
+        Tạo Đầu Mục Công Việc Mới
+    </h4>
+    <a href="{{ url_for('danh_sach_nhiem_vu') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mx-auto" style="max-width: 600px;">
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label fw-semibold text-muted small">Tên danh mục nhiệm vụ <span class="text-danger">*</span></label>
+            <input type="text" name="ten_nhiem_vu" class="form-control" placeholder="VD: Dọn dẹp phòng tiêu chuẩn" required autofocus>
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label fw-semibold text-muted small">Mô tả quy trình (Tùy chọn)</label>
+            <textarea name="mo_ta" class="form-control" rows="3" placeholder="Ghi chú thêm về cách thức thực hiện..."></textarea>
+        </div>
+        
+        <hr class="text-muted mb-4 opacity-25">
+
+        <div class="d-flex justify-content-end gap-3">
+            <button type="submit" class="btn btn-custom px-4 py-2 rounded-pill shadow-sm">
+                <i class="bi bi-floppy-fill me-2"></i>Lưu danh mục
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

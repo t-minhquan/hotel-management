@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Thêm' if action == 'Them' else 'Sửa' }} Phân Công{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="bi bi-clipboard-check-fill me-2" style="color: #ce9d4d;"></i>
+        {{ 'Tạo Phân Công Mới' if action == 'Them' else 'Cập Nhật Phân Công' }}
+    </h4>
+    <a href="{{ url_for('danh_sach_nhiem_vu') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm mx-auto" style="max-width: 700px;">
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <label class="form-label fw-semibold text-muted small">Nhân viên thực hiện <span class="text-danger">*</span></label>
+                <select name="ma_nv" class="form-select" required>
+                    <option value="" disabled {{ 'selected' if action == 'Them' else '' }}>-- Chọn nhân viên --</option>
+                    {% for nv in nhan_vien_list %}
+                        <option value="{{ nv.MaNV }}" {% if action == 'Sua' and phan_cong.MaNV == nv.MaNV %}selected{% endif %}>
+                            {{ nv.HoTen }} ({{ nv.ChucVu }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold text-muted small">Loại Nhiệm vụ <span class="text-danger">*</span></label>
+                <select name="ma_nhiem_vu" class="form-select" required>
+                    <option value="" disabled {{ 'selected' if action == 'Them' else '' }}>-- Chọn nhiệm vụ --</option>
+                    {% for nm in danh_muc_nhiem_vu %}
+                        <option value="{{ nm.MaNhiemVu }}" {% if action == 'Sua' and phan_cong.MaNhiemVu == nm.MaNhiemVu %}selected{% endif %}>
+                            {{ nm.TenNhiemVu }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label fw-semibold text-muted small">Số phòng áp dụng (Nếu có)</label>
+                <select name="ma_phong" class="form-select">
+                    <option value="" {{ 'selected' if action == 'Them' or not phan_cong.MaPhong else '' }}>-- Bỏ qua / Áp dụng chung --</option>
+                    {% for p in phong_list %}
+                        <option value="{{ p.MaPhong }}" {% if action == 'Sua' and phan_cong.MaPhong == p.MaPhong %}selected{% endif %}>
+                            Phòng {{ p.SoPhong }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12 mb-4">
+                <label class="form-label fw-semibold text-muted small">Ghi chú thêm</label>
+                <textarea name="ghi_chu" class="form-control" rows="3" placeholder="Nhập ghi chú chi tiết công việc...">{{ phan_cong.GhiChu if action == 'Sua' and phan_cong.GhiChu else '' }}</textarea>
+            </div>
+        </div>
+        
+        <hr class="text-muted mb-4 opacity-25">
+
+        <div class="d-flex justify-content-end gap-3">
+            <button type="submit" class="btn btn-custom px-4 py-2 rounded-pill shadow-sm">
+                <i class="bi bi-floppy-fill me-2"></i>Lưu phân công
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

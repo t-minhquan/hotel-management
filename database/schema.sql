@@ -176,3 +176,7 @@ VALUES
 (N'Ăn sáng', 80000, N'Buffet sáng'),
 (N'Đưa đón sân bay', 250000, N'Xe đưa đón');
 GO
+
+INSERT INTO NHIEM_VU (TenNhiemVu, MoTa)
+VALUES
+(N'Dọn phòng',N'Dọn phòng cho kĩ vô');

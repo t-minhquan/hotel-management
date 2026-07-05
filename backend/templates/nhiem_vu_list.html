@@ -9,9 +9,15 @@
     </h4>
     
     {% if role in ['IT', 'Quản lý'] %}
-    <a href="#" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: #ce9d4d; border-color: #ce9d4d;">
-        <i class="bi bi-plus-lg me-1"></i> Phân công mới
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('them_danh_muc_nhiem_vu') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-sm">
+            <i class="bi bi-folder-plus me-1"></i> Tạo đầu mục NV
+        </a>
+
+        <a href="{{ url_for('them_phan_cong') }}" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: #ce9d4d; border-color: #ce9d4d;">
+            <i class="bi bi-person-workspace me-1"></i> Phân công mới
+        </a>
+    </div>
     {% endif %}
 </div>
 
@@ -57,9 +63,17 @@
                         {% endif %}
 
                         {% if role in ['IT', 'Quản lý'] %}
-                        <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle" title="Sửa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
+                            <a href="{{ url_for('sua_phan_cong', ma_pc=nv.MaPhanCong) }}" class="btn btn-sm btn-outline-secondary rounded-circle" title="Sửa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        {% endif %}
+
+                        {% if role == 'IT' or role == 'Quản lý' %}
+                            <form action="{{ url_for('xoa_phan_cong', ma_pc=nv.MaPhanCong) }}" method="POST" class="m-0" onsubmit="return confirm('Bạn có chắc chắn muốn xóa phân công này không?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Xóa" style="width: 32px; height: 32px; padding: 0; line-height: 32px;">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </form>
                         {% endif %}
                         
                         {% if role == 'IT' %}
