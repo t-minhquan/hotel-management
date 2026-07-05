@@ -588,7 +588,7 @@ def xoa_nhan_vien(ma_nv):
         query("DELETE FROM NHAN_VIEN WHERE MaNV = ?", (ma_nv,), fetch=False, commit=True)
         flash("Đã xóa nhân viên khỏi hệ thống.", "success")
     except Exception as e:
-        flash("Nhân viên này đã có dữ liệu lịch sử (Đặt phòng, Nhiệm vụ...). Hãy dùng chức năng Sửa để đổi trạng thái thành 'Đã nghỉ' thay vì xóa hẳn.", "warning")
+        flash("Nhân viên này đang có lịch làm việc", "warning")
 
     return redirect(url_for("danh_sach_nhan_vien"))
 
