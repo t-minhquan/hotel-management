@@ -409,11 +409,8 @@ def them_phan_cong():
     nhan_vien_list = query("""
         SELECT NV.MaNV, NV.HoTen, NV.ChucVu
         FROM NHAN_VIEN NV
-        WHERE EXISTS (
-            SELECT 1
-            FROM PHAN_CONG_NHIEM_VU PC
-            WHERE PC.MaNV = NV.MaNV
-        )
+        WHERE NV.TrangThai = N'Đang làm việc'
+        ORDER BY NV.HoTen
     """)
     danh_muc_nhiem_vu = query("SELECT MaNhiemVu, TenNhiemVu FROM NHIEM_VU")
     phong_list = query("SELECT MaPhong, SoPhong FROM PHONG")
@@ -448,11 +445,8 @@ def sua_phan_cong(ma_pc):
     nhan_vien_list = query("""
         SELECT NV.MaNV, NV.HoTen, NV.ChucVu
         FROM NHAN_VIEN NV
-        WHERE EXISTS (
-            SELECT 1
-            FROM PHAN_CONG_NHIEM_VU PC
-            WHERE PC.MaNV = NV.MaNV
-        )
+        WHERE NV.TrangThai = N'Đang làm việc'
+        ORDER BY NV.HoTen
     """)
     danh_muc_nhiem_vu = query("SELECT MaNhiemVu, TenNhiemVu FROM NHIEM_VU")
     phong_list = query("SELECT MaPhong, SoPhong FROM PHONG")
