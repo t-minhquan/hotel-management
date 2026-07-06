@@ -199,7 +199,7 @@ def dat_phong():
         FROM DAT_PHONG DP
         JOIN KHACH_HANG KH ON DP.MaKH = KH.MaKH
         JOIN PHONG P ON DP.MaPhong = P.MaPhong
-        ORDER BY DP.MaDatPhong DESC
+        ORDER BY DP.MaDatPhong ASC
     """)
 
     return render_template(
@@ -222,7 +222,7 @@ def danh_sach_hoa_don():
         JOIN DAT_PHONG DP ON HD.MaDatPhong = DP.MaDatPhong
         JOIN KHACH_HANG KH ON DP.MaKH = KH.MaKH
         JOIN PHONG P ON DP.MaPhong = P.MaPhong
-        ORDER BY HD.MaHD DESC
+        ORDER BY HD.MaHD ASC
     """)
     # Lấy danh sách dịch vụ để sinh option cho select mã dịch vụ
     dich_vu_list = query("SELECT MaDV FROM DICH_VU ORDER BY MaDV")
